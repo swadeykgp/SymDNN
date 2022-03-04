@@ -58,7 +58,7 @@ pip install  -r symdnn_base.txt
 1. Reproduce the compaction (Table 3 of paper): run: python imagenet_compaction_table_3_reproduce.py ( for this to work please put the ImageNet dataset in a folder with train & val directories under it. Point that location in the python file) . For Table 1 entropy encoding can be tested by:
         1. cd imagenet
         2. Open Jupyter notebook
-        3. Run: imagenet-symbolic-inference-size-experiments.ipynb
+        3. Run: **imagenet-symbolic-inference-size-experiments.ipynb** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20(ImageNet).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20%28ImageNet%29.ipynb))
 2. MNIST compaction can be reproduced as follows:
         1. cd mnist
         2. Open Jupyter notebook
@@ -93,7 +93,20 @@ python cifar10_modelbb_defensebb_table1.py
 python cifar10_modelwb_defensewb_table1.py
 ```
 
-- Note: This is the gradient obfuscation case, check how SymDNN defends BPDA
+- Note: This is the gradient obfuscation case, check how SymDNN defends BPDA. In this mode the purification function must be incorporated within the model forward and, in the attack implementation.
+```
+...
+        # return nn.ModuleList(layers)
+        return nn.Sequential(*layers)
+
+    def forward(self, x):
+
+        xsym = symdnn_purify(x, n_clusters, index, centroid_lut, patch_size, stride, channel_count,ana=False, multi=False, instr=False, randomize=True        x.data = xsym.data  
+        x = self.conv1(x)
+        if self.use_bn:
+            x = self.bn1(x)
+...
+```
 
 
 #### Model White box / Defence Black Box - Comparison with some State-of-the-Art defenses:
