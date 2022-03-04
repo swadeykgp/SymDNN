@@ -1,4 +1,4 @@
-# SymDNN: Simple Effective Adversarial Robustness for Embedded Systems
+# SymDNN
 
 
 SymDNN is a Python and PyTorch based Deep Neural Network Inference scheme library that provides *defense* against *adversarial attacks* and results in image compression.  
