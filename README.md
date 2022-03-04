@@ -58,15 +58,15 @@ pip install  -r symdnn_base.txt
 1. Reproduce the compaction (Table 3 of paper): run: python imagenet_compaction_table_3_reproduce.py ( for this to work please put the ImageNet dataset in a folder with train & val directories under it. Point that location in the python file) . For Table 1 entropy encoding can be tested by:
         1. cd imagenet
         2. Open Jupyter notebook
-        3. Run: **imagenet-symbolic-inference-size-experiments.ipynb** ([code](https://github.com/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20(ImageNet).ipynb), [nbviewer](https://nbviewer.jupyter.org/github/Harry24k/adversarial-attacks-pytorch/blob/master/demos/White%20Box%20Attack%20%28ImageNet%29.ipynb))
+        3. Run: **imagenet-symbolic-inference-size-experiments.ipynb** ([code](https://github.com/swadeykgp/SymDNN/blob/main/imagenet/imagenet-symbolic-inference-size-experiments.ipynb))
 2. MNIST compaction can be reproduced as follows:
         1. cd mnist
         2. Open Jupyter notebook
-        3. Run: mnist-symbolic-entropy-encoding.ipynb
+        3. Run: **mnist-symbolic-entropy-encoding.ipynb**([code](https://github.com/swadeykgp/SymDNN/blob/main/mnist/mnist-symbolic-entropy-encoding.ipynb))
 3. CIFAR10 compaction can be reproduced as follows:
         1. cd cifar10
         2. Open Jupyter notebook
-        3. Run: cifar-symbolic-entropy-encoding.ipynb
+        3. Run: **cifar-symbolic-entropy-encoding.ipynb** ([code](https://github.com/swadeykgp/SymDNN/blob/main/cifar10/cifar-symbolic-entropy-encoding.ipynb))
 
 ### Adversarial Robustness
 
@@ -146,9 +146,14 @@ cd imagenet
 ```
 
 1. Open Jupyter notebook
-2. Run: imagenetviz.ipynb
+2. Run: **Attack example and visualization ImageNet / ResNet**  ([code](https://github.com/swadeykgp/SymDNN/blob/main/imagenet/imagenetviz.ipynb))
 
-### Ablation and Other Experiments
+### Ablation and Other Examples
+
+**Attack example and visualization CIFAR-10 / ResNet** ([code](https://github.com/swadeykgp/SymDNN/blob/main/cifar10/cifar10-adversarial-visualization.ipynb))
+
+**Attack example and visualization MNIST / LeNet** ([code](https://github.com/swadeykgp/SymDNN/blob/main/mnist/mnist-symbolic-inference-adversarial-experiments-limited-viz.ipynb))
+
 
 6. The comparison of edit distance and L2 distance of C&W attack, presented in Sec. 5.4 can be reproduced as follows:
         1. run : python figure3_reproduce.py
