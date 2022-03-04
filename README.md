@@ -49,7 +49,7 @@ source symbol/bin/activate
 pip install  -r symdnn_base.txt
 
 ```
-
+SymDNN heavily uses  Harry24k / adversarial-attacks-pytorch (https://github.com/Harry24k/adversarial-attacks-pytorch/tree/master/torchattacks/attacks) for attack implementations.
 
 ## Examples and Result Reproduction
 
