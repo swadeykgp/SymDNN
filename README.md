@@ -1,6 +1,3 @@
-# SymDNN
-SymDNN, a Deep Neural Network (DNN) inference scheme, to segment an input image into small patches, replace those patches with representative symbols, and use the reconstructed image for CNN inference. This approach of deconstruction of images, and the reconstruction from cluster centroids trained on clean images, enhances robustness against adversarial attacks. The input transform used in SymDNN is learned from very large datasets, making it difficult to approximate for adaptive adversarial attacks. For example, SymDNN achieves 23% and 48% robust accuracy at attack strengths 8/255 and 4/255 respectively, against BPDA under a complete white box setting, where most input processing based defenses break completely. SymDNN is not a future-proof adversarial defense that can defend any attack, but it is one of the few readily usable defenses in resource-limited embedded systems that defends against a wide range of attacks, under different attack models. SymDNN also results in significant reduction in the size of the images in their symbolic encoded forms without any significant negative impact on their classification post reconstruction. This can be useful for storage or communication of the images.
-
 # SymDNN: Simple Effective Adversarial Robustness for Embedded Systems
 
 
