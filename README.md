@@ -1,0 +1,2 @@
+# SymDNN
+SymDNN is a Deep Neural Network (DNN) inference scheme which is a readily usable defense for embedded systems. It has very less computation and memory overhead. SymDNN input transform is learned from very large datasets, making it difficult to approximate for even adaptive adversarial attacks. SymDNN also results in significant reduction in the size of the images in their symbolic encoded forms without any significant negative impact on their classification post reconstruction. This can be useful for storage or communication of the images
