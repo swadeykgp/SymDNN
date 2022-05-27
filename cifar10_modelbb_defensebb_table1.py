@@ -129,7 +129,7 @@ net_std.eval()
 #net_holdout =  resnet34(pretrained=True)
 #
 net_holdout =  resnet20()
-net_holdout.load_state_dict(torch.load('./cifar10_holdout.pt'))
+net_holdout.load_state_dict(torch.load('./cifar10/cifar10_holdout.pt'))
 net_holdout.eval()
 #net_holdout = torch.load('./cifar10_resnet_sym_gradinit_40.pth')
 

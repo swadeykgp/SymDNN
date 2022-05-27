@@ -91,6 +91,7 @@ def extract_patches(fm_squeezed, kernel_size, loc, stride=0):
                 patch_loc[patch_count,:] = np.concatenate((patch_loc_temp, loc[patch_count]), axis = 0)
             patch_count += 1
     #print("total patches collected", patch_count)
+    #print ("patch array shape", patch.shape) 
     if loc:
         return patch, patch_loc, loc
     else:
@@ -718,9 +719,7 @@ def cluster_patches_singleshot_fullnet_mnist(train_patch_loader, patch_size, n_c
     faiss.write_index(kmeans.index,"kmeans_mnist_fullnet_k"+str(patch_size[0])+"_s0_c"+str(n_clusters)+"_sc.index")
     if getdata:
         return kmeans, data
-
-
-def reconstruct_fm_from_patches(patches, fm_size, kernel_size, stride=0):
+def reconstruct_fm_from_patches(patches, fm_size, kernel_size, centroid_lut, stride=0):
     fm_x, fm_y = fm_size[0], fm_size[1]
     old_x, old_y = fm_x, fm_y
     #print(fm_x,fm_y)
@@ -751,6 +750,8 @@ def reconstruct_fm_from_patches(patches, fm_size, kernel_size, stride=0):
         
     patches_x = ((fm_x - kernel_size[0]) // stride) + 1 
     patches_y = ((fm_y -  kernel_size[1]) // stride) + 1
+
+
     #print("total patches possible to be used", patches_x*patches_y)
     fm = np.zeros((fm_x, fm_y), dtype=np.double)
     patch_count = 0
@@ -787,8 +788,10 @@ def reconstruct_fm_from_patches(patches, fm_size, kernel_size, stride=0):
     else:
         return fm
 
+
+
+
 # Function for abstracting an image to symbolic form - this is the simplest version
-         
 
 def fm_to_symbolic_fm(fm, n_clusters, kmeans, centroid_lut,  patch_size, stride, channel_count, ana=False, multi=False, instr=False, randomize=False, rlevel=None, rbalance=True, pdf=None):
     if ana:
@@ -797,7 +800,7 @@ def fm_to_symbolic_fm(fm, n_clusters, kmeans, centroid_lut,  patch_size, stride,
         buffer2 = []
         buffer3 = []    
     buffer1 = []
-    #print(fm.shape)
+    #print(" FM input shape", fm.shape)
     for ch in range(channel_count):
         if channel_count == 1:
             img = fm
@@ -813,8 +816,10 @@ def fm_to_symbolic_fm(fm, n_clusters, kmeans, centroid_lut,  patch_size, stride,
         #print(img.shape)
         #data, _ , _ = extract_patches(img, patch_size, stride)
         data = extract_patches(img, patch_size, False, stride)
-        #print ("data shape: {}".format(data.shape))
+        #data = extract_patches_new(img, patch_size, 2)
         data = np.reshape(data, (len(data), -1))
+        #np.savetxt('firstimage'+str(ch)+'.txt', data, delimiter =', ', fmt='%4.10f')
+        #print ("data shape: {}".format(data.shape))
         #buffer.append(data)
         #clusters = kmeans.predict(data)
         if multi:
@@ -869,7 +874,6 @@ def fm_to_symbolic_fm(fm, n_clusters, kmeans, centroid_lut,  patch_size, stride,
             reconstructed_fm3 = reconstruct_fm_from_patches(reconstructed_patch_centers3, (fm_x, fm_y), patch_size, stride)
         #print(reconstructed_patch_centers.shape)
         reconstructed_fm = reconstruct_fm_from_patches(reconstructed_patch_centers, (fm_x, fm_y), patch_size, stride)
-        #print(reconstructed_fm.shape)
         if multi:
             buffer2.append(reconstructed_fm2)
             buffer3.append(reconstructed_fm3)
@@ -877,6 +881,7 @@ def fm_to_symbolic_fm(fm, n_clusters, kmeans, centroid_lut,  patch_size, stride,
         
     reconstructed_fm_ch =  np.array(buffer1, dtype=np.double)
      
+    #print( " FM output  shape", reconstructed_fm_ch.shape)
     if multi:
         reconstructed_fm_ch2 =  np.array(buffer2, dtype=np.double)
         reconstructed_fm_ch3 =  np.array(buffer3, dtype=np.double)
@@ -901,7 +906,10 @@ def symdnn_purify(images, n_clusters, index, centroid_lut, patch_size, stride, c
     n, c, w, h = adv.shape
     for i in range(n):
         X = adv[i,:,:,:]
+        start = time.process_time()
         Xsym_ = fm_to_symbolic_fm(X.squeeze(), n_clusters, index, centroid_lut, patch_size, stride, channel_count, ana, multi, instr, randomize, rlevel, rbalance, pdf)
+        elapsed = (time.process_time() - start)
+        #print('Symbol conversion time:',elapsed)
         #Xsym = torch.from_numpy(Xsym_)
         Xsym = torch.tensor(Xsym_, requires_grad=True)
         #Xsym = Xsym.unsqueeze(0)

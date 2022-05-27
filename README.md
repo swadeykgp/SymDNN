@@ -53,21 +53,6 @@ SymDNN heavily uses  Harry24k / adversarial-attacks-pytorch (https://github.com/
 
 ## Examples and Result Reproduction
 
-### Compaction
-
-1. Reproduce the compaction (Table 3 of paper): run: python imagenet_compaction_table_3_reproduce.py ( for this to work please put the ImageNet dataset in a folder with train & val directories under it. Point that location in the python file) . For Table 1 entropy encoding can be tested by:
-        1. cd imagenet
-        2. Open Jupyter notebook
-        3. Run: **imagenet-symbolic-inference-size-experiments.ipynb** ([code](https://github.com/swadeykgp/SymDNN/blob/main/imagenet/imagenet-symbolic-inference-size-experiments.ipynb))
-2. MNIST compaction can be reproduced as follows:
-        1. cd mnist
-        2. Open Jupyter notebook
-        3. Run: **mnist-symbolic-entropy-encoding.ipynb**([code](https://github.com/swadeykgp/SymDNN/blob/main/mnist/mnist-symbolic-entropy-encoding.ipynb))
-3. CIFAR10 compaction can be reproduced as follows:
-        1. cd cifar10
-        2. Open Jupyter notebook
-        3. Run: **cifar-symbolic-entropy-encoding.ipynb** ([code](https://github.com/swadeykgp/SymDNN/blob/main/cifar10/cifar-symbolic-entropy-encoding.ipynb))
-
 ### Adversarial Robustness
 
 Table 1 results (CIFAR-10 Adversarial Robustness under different Attack models) can be produced as follows:
@@ -166,6 +151,21 @@ cd imagenet
 9. The clustering of ImageNet and MNIST can be tried out in the clustering folder. For MNIST cd to clustering/mnist and run: python mnistcluster.py
 10. For Imagenet, we recommend a GPU system. Please create a new python venv and run: pip install -r symdnn_cluster_gpu.txt  .  Then cd to   clustering/imagenet and run: python imgnet_cluster.py
 
+
+### Compaction
+
+1. Reproduce the compaction (Table 3 of paper): run: python imagenet_compaction_table_3_reproduce.py ( for this to work please put the ImageNet dataset in a folder with train & val directories under it. Point that location in the python file) . For Table 1 entropy encoding can be tested by:
+        1. cd imagenet
+        2. Open Jupyter notebook
+        3. Run: **imagenet-symbolic-inference-size-experiments.ipynb** ([code](https://github.com/swadeykgp/SymDNN/blob/main/imagenet/imagenet-symbolic-inference-size-experiments.ipynb))
+2. MNIST compaction can be reproduced as follows:
+        1. cd mnist
+        2. Open Jupyter notebook
+        3. Run: **mnist-symbolic-entropy-encoding.ipynb**([code](https://github.com/swadeykgp/SymDNN/blob/main/mnist/mnist-symbolic-entropy-encoding.ipynb))
+3. CIFAR10 compaction can be reproduced as follows:
+        1. cd cifar10
+        2. Open Jupyter notebook
+        3. Run: **cifar-symbolic-entropy-encoding.ipynb** ([code](https://github.com/swadeykgp/SymDNN/blob/main/cifar10/cifar-symbolic-entropy-encoding.ipynb))
 
 
 
