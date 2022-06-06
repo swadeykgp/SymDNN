@@ -1,7 +1,7 @@
 # SymDNN
 
 
-SymDNN is a Python and PyTorch based Deep Neural Network Inference scheme library that provides *defense* against *adversarial attacks* and can be used for image compression.  
+SymDNN is a Python and PyTorch based Deep Neural Network Inference  library that provides *defense* against *adversarial attacks* on *embedded systems*. It can be used for image compression.  
 
 <details><summary>Quick Usage Guide</summary><p>
 
