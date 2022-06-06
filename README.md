@@ -50,7 +50,7 @@ source symbol/bin/activate
 pip install  -r symdnn_base.txt
 
 ```
-SymDNN heavily uses  Harry24k / adversarial-attacks-pytorch (https://github.com/Harry24k/adversarial-attacks-pytorch/tree/master/torchattacks/attacks) for attack implementations.
+SymDNN heavily uses  Harry24k / adversarial-attacks-pytorch (https://github.com/Harry24k/adversarial-attacks-pytorch/tree/master/torchattacks/attacks) for attack implementations. The attack examples are based on this repository.  
 
 ## Examples and Result Reproduction
 
@@ -168,7 +168,31 @@ cd imagenet
         2. Open Jupyter notebook
         3. Run: **cifar-symbolic-entropy-encoding.ipynb** ([code](https://github.com/swadeykgp/SymDNN/blob/main/cifar10/cifar-symbolic-entropy-encoding.ipynb))
 
+### Citation
 
+If you find our work useful, please consider citing:
 
+```bibtex
+@inproceedings{dey2022symdnn,
+title={SymDNN: Simple & Effective Adversarial Robustness for Embedded Systems},
+author={Dey, Swarnava and Dasgupta, Pallab and Chakrabarti, Partha P},
+booktitle = {CVPRW},
+year = {2022}
+}
+```
 
+## License
+
+This code is released under MIT license.
+
+## Acknowledgments
+
+Our code was built using several existing GitHub repositories.  
+We are thankful to all the authors who have open-sourced their work, which helped us to develop this implementation quickly. 
+Here are the ones that we have used extensively. We have cited these works in our paper, you are also encouraged to cite these if these are helpful in your research: 
+[Harry24k / adversarial-attacks-pytorch](https://github.com/Harry24k/adversarial-attacks-pytorch/tree/master/torchattacks/attacks)
+[facebookresearch / faiss](https://github.com/facebookresearch/faiss)
+[anishathalye / obfuscated-gradients](https://github.com/anishathalye/obfuscated-gradients)
+[Muzammal-Naseer / NRP](https://github.com/Muzammal-Naseer/NRP)
+[sky4689524 / DefenseGAN-Pytorch](https://github.com/sky4689524/DefenseGAN-Pytorch)
 
