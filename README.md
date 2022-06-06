@@ -113,7 +113,7 @@ We supply the working repo with modifications for testing under all TorchAttacks
         - reconstruct_loss.backward()
         + reconstruct_loss.backward(retain_graph=True)
 
-        2. ```python cifar10_modelwb_defensebb_table2.py```
+        2. python cifar10_modelwb_defensebb_table2.py
 
 ##### Adversarially Trained models
 - Note: Install Robustbench version 0.1 for this part
@@ -161,7 +161,9 @@ cd imagenet
 
         2. Open Jupyter notebook
         
-        3. Run: **imagenet-symbolic-inference-size-experiments.ipynb** ([code](https://github.com/swadeykgp/SymDNN/blob/main/imagenet/imagenet-symbolic-inference-size-experiments.ipynb))
+        3. Run the following notebook: 
+         
+      **imagenet-symbolic-inference-size-experiments.ipynb** ([code](https://github.com/swadeykgp/SymDNN/blob/main/imagenet/imagenet-symbolic-inference-size-experiments.ipynb))
 
 2. MNIST compaction can be reproduced as follows:
 
@@ -169,7 +171,9 @@ cd imagenet
         
         2. Open Jupyter notebook
         
-        3. Run: **mnist-symbolic-entropy-encoding.ipynb**([code](https://github.com/swadeykgp/SymDNN/blob/main/mnist/mnist-symbolic-entropy-encoding.ipynb))
+        3. Run the following notebook:  
+         
+      **mnist-symbolic-entropy-encoding.ipynb**([code](https://github.com/swadeykgp/SymDNN/blob/main/mnist/mnist-symbolic-entropy-encoding.ipynb))
 
 3. CIFAR10 compaction can be reproduced as follows:
 
@@ -177,7 +181,9 @@ cd imagenet
         
         2. Open Jupyter notebook
         
-        3. Run: **cifar-symbolic-entropy-encoding.ipynb** ([code](https://github.com/swadeykgp/SymDNN/blob/main/cifar10/cifar-symbolic-entropy-encoding.ipynb))
+        3. Run the following notebook: 
+        
+      **cifar-symbolic-entropy-encoding.ipynb** ([code](https://github.com/swadeykgp/SymDNN/blob/main/cifar10/cifar-symbolic-entropy-encoding.ipynb))
 
 ### Citation
 
