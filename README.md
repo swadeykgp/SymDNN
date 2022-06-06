@@ -176,7 +176,7 @@ If you find our work useful, please consider citing:
 @inproceedings{dey2022symdnn,
 title={SymDNN: Simple & Effective Adversarial Robustness for Embedded Systems},
 author={Dey, Swarnava and Dasgupta, Pallab and Chakrabarti, Partha P},
-booktitle = {CVPRW},
+booktitle = {IEEE Conference on Computer Vision and Pattern Recognition Workshop (CVPRW)},
 year = {2022}
 }
 ```
