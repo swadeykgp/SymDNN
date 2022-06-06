@@ -156,16 +156,27 @@ cd imagenet
 ### Compaction
 
 1. Reproduce the compaction (Table 3 of paper): run: python imagenet_compaction_table_3_reproduce.py ( for this to work please put the ImageNet dataset in a folder with train & val directories under it. Point that location in the python file) . For Table 1 entropy encoding can be tested by:
+
         1. cd imagenet
+
         2. Open Jupyter notebook
+        
         3. Run: **imagenet-symbolic-inference-size-experiments.ipynb** ([code](https://github.com/swadeykgp/SymDNN/blob/main/imagenet/imagenet-symbolic-inference-size-experiments.ipynb))
+
 2. MNIST compaction can be reproduced as follows:
+
         1. cd mnist
+        
         2. Open Jupyter notebook
+        
         3. Run: **mnist-symbolic-entropy-encoding.ipynb**([code](https://github.com/swadeykgp/SymDNN/blob/main/mnist/mnist-symbolic-entropy-encoding.ipynb))
+
 3. CIFAR10 compaction can be reproduced as follows:
+
         1. cd cifar10
+        
         2. Open Jupyter notebook
+        
         3. Run: **cifar-symbolic-entropy-encoding.ipynb** ([code](https://github.com/swadeykgp/SymDNN/blob/main/cifar10/cifar-symbolic-entropy-encoding.ipynb))
 
 ### Citation
@@ -190,9 +201,14 @@ This code is released under MIT license.
 Our code was built using several existing GitHub repositories.  
 We are thankful to all the authors who have open-sourced their work, which helped us to develop this implementation quickly. 
 Here are the ones that we have used extensively. We have cited these works in our paper, you are also encouraged to cite these if these are helpful in your research: 
+
 [Harry24k / adversarial-attacks-pytorch](https://github.com/Harry24k/adversarial-attacks-pytorch/tree/master/torchattacks/attacks)
+
 [facebookresearch / faiss](https://github.com/facebookresearch/faiss)
+
 [anishathalye / obfuscated-gradients](https://github.com/anishathalye/obfuscated-gradients)
+
 [Muzammal-Naseer / NRP](https://github.com/Muzammal-Naseer/NRP)
+
 [sky4689524 / DefenseGAN-Pytorch](https://github.com/sky4689524/DefenseGAN-Pytorch)
 
