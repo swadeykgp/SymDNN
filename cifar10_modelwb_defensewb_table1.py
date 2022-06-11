@@ -25,7 +25,8 @@ import faiss
 import sys
 #sys.path.insert(1, './cifar10')
 sys.path.insert(1, './core')
-from patchutils_new import symdnn_purify
+from patchutils import symdnn_purify
+from modeldefs_wb import *
 
 import math
 class BPDAattack(object):
@@ -83,108 +84,6 @@ class BPDAattack(object):
 
 
 
-np.random.seed(0)
-use_cuda=False
-device='cpu'
-batch_size = 1
-#batch_size_vanilla = 64 
-batch_size_vanilla = 1 
-
-torch.manual_seed(0)
-np.random.seed(0)
-random.seed(0)
-transform_test = transforms.Compose([
-    transforms.ToTensor(),
-    transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
-])
-
-#CHANGEME - put the dataset location
-
-testset = torchvision.datasets.CIFAR10(root='../../dataset', train=False, download=True, transform=transform_test)
-testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=False)
-testloader_vanilla = torch.utils.data.DataLoader(testset, batch_size=batch_size_vanilla, shuffle=False)
-classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
-channel_count = 3 
-stride = 0
-n_clusters = 2048
-patch_size = (2, 2)
-location=False
-
-from modeldefs_wb import *
-
-# Base model for Cifar-10 (data [0,1]) 
-pretrained_base_clampled_gradinit = './cifar10/cifar10_resnet_gradinit_sc_232.pt'
-net_std = resnet20()
-net_std.load_state_dict(torch.load(pretrained_base_clampled_gradinit))
-net_std.eval()
-
-index = faiss.read_index('./cifar10/kmeans_img_k2_s0_c2048_v1_softclamp.index')
-centroid_lut = index.reconstruct_n(0, n_clusters)
-# Lets check the kind of prediction the net_std is doing
-correct = 0
-total = 0
-net_std.eval()
-# Define a custom function that will clamp the images between 0 & 1 , without being too harsh as torch.clamp 
-def softclamp01(image_tensor):
-    image_tensor_shape = image_tensor.shape
-    image_tensor = image_tensor.view(image_tensor.size(0), -1)
-    image_tensor -= image_tensor.min(1, keepdim=True)[0]
-    image_tensor /= image_tensor.max(1, keepdim=True)[0]
-    image_tensor = image_tensor.view(image_tensor_shape)
-    return image_tensor
-
-print("PyTorch", torch.__version__)
-print("Torchvision", torchvision.__version__)
-print("Torchattacks", torchattacks.__version__)
-print("Numpy", np.__version__)
-
-bpda_adversary2 = BPDAattack(net_std, None, None, epsilon=2/255, learning_rate=0.5, max_iterations=100)
-bpda_adversary4 = BPDAattack(net_std, None, None, epsilon=4/255, learning_rate=0.5, max_iterations=100)
-bpda_adversary8 = BPDAattack(net_std, None, None, epsilon=8/255, learning_rate=0.5, max_iterations=100)
-bpda_adversary16 = BPDAattack(net_std, None, None, epsilon=16/255, learning_rate=0.5, max_iterations=100)
-atks = [
-    bpda_adversary4.generate,
-    bpda_adversary8.generate,
-    bpda_adversary16.generate,
-    TIFGSM(net_std, eps=8/255, alpha=2/255, steps=100, diversity_prob=0.5),
-    AutoAttack(net_std, eps=8/255, n_classes=10, version='standard'), # take this at last if time permits
-    DIFGSM(net_std, eps=8/255, alpha=2/255, steps=100, diversity_prob=0.5, resize_rate=0.9),
-    MIFGSM(net_std, eps=8/255, alpha=2/255, steps=100, decay=0.1),
-    RFGSM(net_std, eps=8/255, alpha=2/255, steps=100),
-    EOTPGD(net_std, eps=8/255, alpha=2/255, steps=100, eot_iter=2),
-    APGD(net_std, eps=8/255, steps=100, eot_iter=1, n_restarts=1, loss='ce'),
-    APGD(net_std, eps=8/255, steps=100, eot_iter=1, n_restarts=1, loss='dlr'),
-    APGDT(net_std, eps=8/255, steps=100, eot_iter=1, n_restarts=1),
-    Jitter(net_std, eps=8/255, alpha=2/255, steps=40, scale=10, std=0.1, random_start=True),
-    CW(net_std, c=1, lr=0.01, steps=100, kappa=0),
-    FAB(net_std, eps=8/255, steps=100, n_classes=10, n_restarts=1, targeted=False),
-    FAB(net_std, eps=8/255, steps=100, n_classes=10, n_restarts=1, targeted=True),
-    Square(net_std, eps=8/255, n_queries=5000, n_restarts=1, loss='ce'),
-    DeepFool(net_std, steps=100),
-    TIFGSM(net_std, eps=4/255, alpha=2/255, steps=100, diversity_prob=0.5),
-    AutoAttack(net_std, eps=4/255, n_classes=10, version='standard'), # take this at last if time permits
-    DIFGSM(net_std, eps=4/255, alpha=2/255, steps=100, diversity_prob=0.5, resize_rate=0.9),
-    MIFGSM(net_std, eps=4/255, alpha=2/255, steps=100, decay=0.1),
-    RFGSM(net_std, eps=4/255, alpha=2/255, steps=100),
-    EOTPGD(net_std, eps=4/255, alpha=2/255, steps=100, eot_iter=2),
-    APGD(net_std, eps=4/255, steps=100, eot_iter=1, n_restarts=1, loss='dlr'),
-    APGDT(net_std, eps=4/255, steps=100, eot_iter=1, n_restarts=1),
-    Jitter(net_std, eps=4/255, alpha=2/255, steps=40, scale=10, std=0.1, random_start=True),
-    APGD(net_std, eps=4/255, steps=100, eot_iter=1, n_restarts=1, loss='ce')
-]
-atk_id = 0
-
-#CHANGEME - select the number of examples to use - 10 means 1000 images, set 5 for 2000 images
-#random_indices = list(range(0, len(testset), 5))
-random_indices = list(range(0, len(testset), 10))
-print(len(random_indices))
-#test_subset = torch.utils.data.Subset(testset, random_indices)
-#sub_indices = list(range(5))
-testset_subset = torch.utils.data.Subset(testset, random_indices)
-testloader_subset = torch.utils.data.DataLoader(testset_subset, batch_size=1, shuffle=False)
-testloader_subset_vanilla = torch.utils.data.DataLoader(testset_subset, batch_size=batch_size_vanilla, shuffle=False)
-
-print("Adversarial Image & Predicted Label for Symbolic inference")
 def analyse_internals(atk, atk_id, rlevel1, rlevel2):
 
     print("-"*70)
@@ -292,6 +191,107 @@ def analyse_internals(atk, atk_id, rlevel1, rlevel2):
     print("Final WB defense  Gradinit model accuracy:{}".format(100 * float(base_clean) / total))
     print("Final WB defense  Gradinit model accuracy after attack :{}".format(100 * float(base_perturbed) / total))
     
-for aattkk in atks:
-    analyse_internals(aattkk, atk_id, 25, 25)
-    atk_id +=1
+if __name__ == '__main__':
+    use_cuda=False
+    device='cpu'
+    batch_size = 1
+    #batch_size_vanilla = 64 
+    batch_size_vanilla = 1 
+    
+    torch.manual_seed(0)
+    np.random.seed(0)
+    random.seed(0)
+    transform_test = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+    ])
+    
+    #CHANGEME - put the dataset location
+    
+    testset = torchvision.datasets.CIFAR10(root='../../dataset', train=False, download=True, transform=transform_test)
+    testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=False)
+    testloader_vanilla = torch.utils.data.DataLoader(testset, batch_size=batch_size_vanilla, shuffle=False)
+    classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+    channel_count = 3 
+    stride = 0
+    n_clusters = 2048
+    patch_size = (2, 2)
+    location=False
+    
+    
+    # Base model for Cifar-10 (data [0,1]) 
+    pretrained_base_clampled_gradinit = './cifar10/cifar10_resnet_gradinit_sc_232.pt'
+    net_std = resnet20()
+    net_std.load_state_dict(torch.load(pretrained_base_clampled_gradinit))
+    net_std.eval()
+    
+    index = faiss.read_index('./cifar10/kmeans_img_k2_s0_c2048_v1_softclamp.index')
+    centroid_lut = index.reconstruct_n(0, n_clusters)
+    # Lets check the kind of prediction the net_std is doing
+    correct = 0
+    total = 0
+    net_std.eval()
+    # Define a custom function that will clamp the images between 0 & 1 , without being too harsh as torch.clamp 
+    def softclamp01(image_tensor):
+        image_tensor_shape = image_tensor.shape
+        image_tensor = image_tensor.view(image_tensor.size(0), -1)
+        image_tensor -= image_tensor.min(1, keepdim=True)[0]
+        image_tensor /= image_tensor.max(1, keepdim=True)[0]
+        image_tensor = image_tensor.view(image_tensor_shape)
+        return image_tensor
+    
+    print("PyTorch", torch.__version__)
+    print("Torchvision", torchvision.__version__)
+    print("Torchattacks", torchattacks.__version__)
+    print("Numpy", np.__version__)
+    
+    bpda_adversary2 = BPDAattack(net_std, None, None, epsilon=2/255, learning_rate=0.5, max_iterations=100)
+    bpda_adversary4 = BPDAattack(net_std, None, None, epsilon=4/255, learning_rate=0.5, max_iterations=100)
+    bpda_adversary8 = BPDAattack(net_std, None, None, epsilon=8/255, learning_rate=0.5, max_iterations=100)
+    bpda_adversary16 = BPDAattack(net_std, None, None, epsilon=16/255, learning_rate=0.5, max_iterations=100)
+    atks = [
+        bpda_adversary4.generate,
+        bpda_adversary8.generate,
+        bpda_adversary16.generate,
+        TIFGSM(net_std, eps=8/255, alpha=2/255, steps=100, diversity_prob=0.5),
+        AutoAttack(net_std, eps=8/255, n_classes=10, version='standard'), # take this at last if time permits
+        DIFGSM(net_std, eps=8/255, alpha=2/255, steps=100, diversity_prob=0.5, resize_rate=0.9),
+        MIFGSM(net_std, eps=8/255, alpha=2/255, steps=100, decay=0.1),
+        RFGSM(net_std, eps=8/255, alpha=2/255, steps=100),
+        EOTPGD(net_std, eps=8/255, alpha=2/255, steps=100, eot_iter=2),
+        APGD(net_std, eps=8/255, steps=100, eot_iter=1, n_restarts=1, loss='ce'),
+        APGD(net_std, eps=8/255, steps=100, eot_iter=1, n_restarts=1, loss='dlr'),
+        APGDT(net_std, eps=8/255, steps=100, eot_iter=1, n_restarts=1),
+        Jitter(net_std, eps=8/255, alpha=2/255, steps=40, scale=10, std=0.1, random_start=True),
+        CW(net_std, c=1, lr=0.01, steps=100, kappa=0),
+        FAB(net_std, eps=8/255, steps=100, n_classes=10, n_restarts=1, targeted=False),
+        FAB(net_std, eps=8/255, steps=100, n_classes=10, n_restarts=1, targeted=True),
+        Square(net_std, eps=8/255, n_queries=5000, n_restarts=1, loss='ce'),
+        DeepFool(net_std, steps=100),
+        TIFGSM(net_std, eps=4/255, alpha=2/255, steps=100, diversity_prob=0.5),
+        AutoAttack(net_std, eps=4/255, n_classes=10, version='standard'), # take this at last if time permits
+        DIFGSM(net_std, eps=4/255, alpha=2/255, steps=100, diversity_prob=0.5, resize_rate=0.9),
+        MIFGSM(net_std, eps=4/255, alpha=2/255, steps=100, decay=0.1),
+        RFGSM(net_std, eps=4/255, alpha=2/255, steps=100),
+        EOTPGD(net_std, eps=4/255, alpha=2/255, steps=100, eot_iter=2),
+        APGD(net_std, eps=4/255, steps=100, eot_iter=1, n_restarts=1, loss='dlr'),
+        APGDT(net_std, eps=4/255, steps=100, eot_iter=1, n_restarts=1),
+        Jitter(net_std, eps=4/255, alpha=2/255, steps=40, scale=10, std=0.1, random_start=True),
+        APGD(net_std, eps=4/255, steps=100, eot_iter=1, n_restarts=1, loss='ce')
+    ]
+    atk_id = 0
+    
+    #CHANGEME - select the number of examples to use - 10 means 1000 images, set 5 for 2000 images
+    #random_indices = list(range(0, len(testset), 5))
+    random_indices = list(range(0, len(testset), 10))
+    print(len(random_indices))
+    #test_subset = torch.utils.data.Subset(testset, random_indices)
+    #sub_indices = list(range(5))
+    testset_subset = torch.utils.data.Subset(testset, random_indices)
+    testloader_subset = torch.utils.data.DataLoader(testset_subset, batch_size=1, shuffle=False)
+    testloader_subset_vanilla = torch.utils.data.DataLoader(testset_subset, batch_size=batch_size_vanilla, shuffle=False)
+    
+    print("Adversarial Image & Predicted Label for Symbolic inference")
+    for aattkk in atks:
+        analyse_internals(aattkk, atk_id, 25, 25)
+        atk_id +=1

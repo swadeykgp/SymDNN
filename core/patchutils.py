@@ -897,29 +897,70 @@ def fm_to_symbolic_fm(fm, n_clusters, kmeans, centroid_lut,  patch_size, stride,
     else:                
         return reconstructed_fm_ch       
 
-
-
+def purify_helper(images, n_clusters, index, centroid_lut, patch_size, stride, channel_count, ana=False, multi=False, instr=False, randomize=False, rlevel=None, rbalance=True,  pdf=None):
+    X = images
+    #start = time.process_time()
+    Xsym_ = fm_to_symbolic_fm(X.squeeze(), n_clusters, index, centroid_lut, patch_size, stride, channel_count, ana, multi, instr, randomize, rlevel, rbalance, pdf)
+    #elapsed = (time.process_time() - start)
+    #print('Symbol conversion time:',elapsed)
+    #Xsym = torch.from_numpy(Xsym_)
+    #Xsym = torch.tensor(Xsym_, requires_grad=True)
+    #Xsym = Xsym.unsqueeze(0)
+    return Xsym_
+import multiprocessing
+from joblib import Parallel, delayed
 # main function for purification defense
 def symdnn_purify(images, n_clusters, index, centroid_lut, patch_size, stride, channel_count, ana=False, multi=False, instr=False, randomize=False, rlevel=None, rbalance=True,  pdf=None):
-    #adv = images.detach().clone()
     adv = images
     n, c, w, h = adv.shape
-    for i in range(n):
-        X = adv[i,:,:,:]
-        start = time.process_time()
-        Xsym_ = fm_to_symbolic_fm(X.squeeze(), n_clusters, index, centroid_lut, patch_size, stride, channel_count, ana, multi, instr, randomize, rlevel, rbalance, pdf)
-        elapsed = (time.process_time() - start)
-        #print('Symbol conversion time:',elapsed)
-        #Xsym = torch.from_numpy(Xsym_)
-        Xsym = torch.tensor(Xsym_, requires_grad=True)
-        #Xsym = Xsym.unsqueeze(0)
-        if i == 0:
-            purified_images = Xsym.float()
-            purified_images = purified_images.unsqueeze(0)
-        else:
-            purified_images = torch.cat([purified_images, (Xsym.float()).unsqueeze(0)], dim=0)       
-    adv_purified = purified_images.detach()
+    PAR = multiprocessing.cpu_count() 
+    #print(PAR)
+    results = Parallel(n_jobs=PAR)(delayed(purify_helper)(adv[i,:,:,:], n_clusters, index, centroid_lut, patch_size, stride, channel_count, ana, multi, instr, randomize, rlevel, rbalance,  pdf ) for i in range(n))
+    x = np.asarray(results, dtype=np.float32)
+    x = torch.from_numpy(x)
+    x = torch.tensor(x, requires_grad=True)
+    x = x.float()
+    adv_purified = x.detach()
     adv_purified.requires_grad_()
     adv_purified.retain_grad()
     return adv_purified
-    #return purified_images
+# This variant  is added only for complete whitebox attack
+def symdnn_purify_detach(images, n_clusters, index, centroid_lut, patch_size, stride, channel_count, ana=False, multi=False, instr=False, randomize=False, rlevel=None, rbalance=True,  pdf=None):
+    adv = images.detach().clone()
+    n, c, w, h = adv.shape
+    PAR = multiprocessing.cpu_count() 
+    #print(PAR)
+    results = Parallel(n_jobs=PAR)(delayed(purify_helper)(adv[i,:,:,:], n_clusters, index, centroid_lut, patch_size, stride, channel_count, ana, multi, instr, randomize, rlevel, rbalance,  pdf ) for i in range(n))
+    x = np.asarray(results, dtype=np.float32)
+    x = torch.from_numpy(x)
+    x = torch.tensor(x, requires_grad=True)
+    x = x.float()
+    adv_purified = x.detach()
+    adv_purified.requires_grad_()
+    adv_purified.retain_grad()
+    return adv_purified
+
+## main function for purification defense
+#def symdnn_purify(images, n_clusters, index, centroid_lut, patch_size, stride, channel_count, ana=False, multi=False, instr=False, randomize=False, rlevel=None, rbalance=True,  pdf=None):
+#    #adv = images.detach().clone()
+#    adv = images
+#    n, c, w, h = adv.shape
+#    for i in range(n):
+#        X = adv[i,:,:,:]
+#        start = time.process_time()
+#        Xsym_ = fm_to_symbolic_fm(X.squeeze(), n_clusters, index, centroid_lut, patch_size, stride, channel_count, ana, multi, instr, randomize, rlevel, rbalance, pdf)
+#        elapsed = (time.process_time() - start)
+#        #print('Symbol conversion time:',elapsed)
+#        #Xsym = torch.from_numpy(Xsym_)
+#        Xsym = torch.tensor(Xsym_, requires_grad=True)
+#        #Xsym = Xsym.unsqueeze(0)
+#        if i == 0:
+#            purified_images = Xsym.float()
+#            purified_images = purified_images.unsqueeze(0)
+#        else:
+#            purified_images = torch.cat([purified_images, (Xsym.float()).unsqueeze(0)], dim=0)       
+#    adv_purified = purified_images.detach()
+#    adv_purified.requires_grad_()
+#    adv_purified.retain_grad()
+#    return adv_purified
+#    #return purified_images

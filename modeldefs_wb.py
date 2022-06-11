@@ -67,7 +67,7 @@ class BasicBlock(nn.Module):
         return out
 import sys
 sys.path.insert(1, './core')
-from patchutils_new import symdnn_purify
+from patchutils import symdnn_purify_detach
 import faiss
 torch.manual_seed(0)
 np.random.seed(0)
@@ -160,7 +160,7 @@ class ResNet(nn.Module):
 
     def forward(self, x):
          
-        xsym = symdnn_purify(x, n_clusters, index, centroid_lut, patch_size, stride, channel_count,ana=False, multi=False, instr=False, randomize=True, rlevel=25, rbalance=True, pdf=None)
+        xsym = symdnn_purify_detach(x, n_clusters, index, centroid_lut, patch_size, stride, channel_count,ana=False, multi=False, instr=False, randomize=True, rlevel=25, rbalance=True, pdf=None)
         x.data = xsym.data 
         x = self.conv1(x)
         if self.use_bn:
